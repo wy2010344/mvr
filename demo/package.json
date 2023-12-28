@@ -1,0 +1,23 @@
+{
+  "name": "demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --force",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "mvr-core": "file:.yalc/mvr-core",
+    "mvr-dom": "file:.yalc/mvr-dom",
+    "mvr-dom-helper": "file:.yalc/mvr-dom-helper",
+    "mvr-helper": "file:.yalc/mvr-helper",
+    "wy-dom-helper": "file:.yalc/wy-dom-helper",
+    "wy-helper": "file:.yalc/wy-helper"
+  }
+}

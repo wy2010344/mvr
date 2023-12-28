@@ -1,0 +1,29 @@
+{
+  "version": "v1",
+  "packages": {
+    "mvr-core": {
+      "signature": "68bd2b33c423c7719a605bbff6f56010",
+      "file": true
+    },
+    "mvr-dom": {
+      "signature": "4777605fe2fa057335529cab8cfaa90b",
+      "file": true
+    },
+    "mvr-helper": {
+      "signature": "9c71042c2bba3408d989942d38470317",
+      "file": true
+    },
+    "wy-helper": {
+      "signature": "e95fc587e02eb805c605ccc9b4935190",
+      "file": true
+    },
+    "mvr-dom-helper": {
+      "signature": "4fd3f6657861ff243c905b53a07d08e8",
+      "file": true
+    },
+    "wy-dom-helper": {
+      "signature": "c8c2918196e652eb354ffa61f7782ac4",
+      "file": true
+    }
+  }
+}

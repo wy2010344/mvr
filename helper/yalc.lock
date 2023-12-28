@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "packages": {
+    "wy-helper": {
+      "signature": "b2f5bab173688986310facd3ad4d7477",
+      "file": true
+    },
+    "mvr-core": {
+      "signature": "6811df8d4a827c1fbfb7cbe8cffab0e9",
+      "file": true
+    }
+  }
+}
