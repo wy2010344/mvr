@@ -3,7 +3,7 @@ import { Fiber, VirtaulDomNode } from "./Fiber";
 import { Reconcile } from "./reconcile";
 export type { EffectResult } from './fc'
 export type { GetAstNextTimeWork, FindParentAndBefore } from './commitWork'
-export { useLevelEffect, useComputed, useModel, createContext, renderFiber } from './fc'
+export { useLevelEffect, useBaseComputed, useBaseModel, createContext, renderFiber, useBaseMemo } from './fc'
 export * from './renderMapF'
 export * from './renderOneF'
 export type {

@@ -1,43 +1,50 @@
-import { emptyArray, quote } from "wy-helper";
-import { useModel, createContext, useComputed } from "mvr-core";
+import { RWValue, emptyArray, quote } from "wy-helper";
+import { createContext } from "mvr-core";
 import { createRoot, dom, getScheduleAskTime } from "mvr-dom";
-import { useModelState, renderArray } from "mvr-helper";
+import { useModelState, renderArray, useEffect, useModel, useComputed, useComputedValue, useModelValue } from "mvr-helper";
 import { useOnLine } from "mvr-dom-helper";
+import { page1 } from "./page1";
+import { normalPanel, renderPanelProvider } from "./panel/PanelContext";
+import stl from "./stl";
 
 export function createmvr(app: HTMLElement) {
   const destroy = createRoot(app, function () {
-    dom.div().render(function () {
-      const [getValue, setValue] = useModel(0)
-      const value = getValue()
-      console.log("render", performance.now())
-      context.useProvider({
-        value,
-        getValue,
-        addValue() {
-          setValue(getValue() + 1)
-        },
-      })
-
-      const online = useOnLine()
-
-      dom.button({
-        onClick() {
-          setValue(getValue() + 1)
-        }
-      }).text`点击${value} ${online + ''}`
-
-      renderSub()
-      renderToDoList()
+    const operator = renderPanelProvider()
+    useEffect(() => {
+      // demoPanel(operator)
+      stl(operator, null)
     }, emptyArray)
-
   }, getScheduleAskTime({}))
 }
 
 
+const demoPanel = normalPanel(function (operator) {
+  console.log("render")
+  dom.div().render(function () {
+    const value = useModelValue(0)
+    console.log("render", performance.now())
+    context.useProvider({
+      value,
+      addValue() {
+        value.value++
+      },
+    })
+
+    const online = useOnLine()
+
+    dom.button({
+      onClick() {
+        value.value++
+      }
+    }).text`点击${value.value} ${online + ''}`
+
+    renderSub()
+    renderToDoList()
+  }, emptyArray)
+  // page1()
+})
 function renderToDoList() {
   const [lists, setList, getList] = useModelState<number[]>(emptyArray as any)
-
-  console.log("ddd", lists)
   renderArray(lists, quote, function (row, i) {
 
     dom.div().render(function () {
@@ -57,32 +64,26 @@ function renderToDoList() {
   }).text`增加`
 }
 
-const context = createContext({
-  value: 0,
-  addValue() {
-
-  },
-  getValue() {
-    return 9 as number
-  }
-})
+const context = createContext<{
+  value: RWValue<number>
+  addValue(): void
+}>(null as any)
 
 
 function renderSub() {
   dom.div().render(function () {
 
-    const [getValue, setValue] = useModel(0)
-    const value = getValue()
+    const value = useModelValue(0)
 
-    const abcValue = useComputed(() => getValue() + 9, () => [getValue()])
+    const abcValue = useComputedValue(value.value + 9)
     dom.button({
       onClick() {
-        setValue(getValue() + 1)
-        const abc = abcValue()
+        value.value++
+        const abc = abcValue.value;
         console.log("ddd", abc)
       }
-    }).text`点击${value}`
-    console.log("sub-render", abcValue(), performance.now())
+    }).text`点击${value.value}`
+    console.log("sub-render", abcValue.value, performance.now())
 
     ThirdRender()
   }, emptyArray)
@@ -91,13 +92,14 @@ function renderSub() {
 
 function ThirdRender() {
   dom.div().render(function () {
-    const { getValue, addValue } = context.useConsumer()
-    console.log("third---render", getValue())
+    const { value, addValue } = context.useConsumer()
+    console.log("third---render", value)
 
+    const agc = useComputedValue(value.value + 1)
     dom.button({
       onClick() {
         addValue()
-        console.log("新的value是", getValue())
+        console.log("新的value是", value.value, agc.value)
       }
     }).text`从context点击`
   }, emptyArray)

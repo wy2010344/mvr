@@ -57,5 +57,10 @@
     "mvr-helper": "^0.1.0",
     "wy-helper": "^0.1.0",
     "wy-dom-helper": "^0.1.0"
+  },
+  "dependencies": {
+    "mvr-core": "file:.yalc/mvr-core",
+    "mvr-helper": "file:.yalc/mvr-helper",
+    "wy-helper": "file:.yalc/wy-helper"
   }
 }

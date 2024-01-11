@@ -13,28 +13,36 @@
  * 这种实时与jetpact compose结合?
  */
 
-import { arrayEqual, arrayNotEqualDepsWithEmpty, quote, simpleEqual } from "wy-helper"
-import { Fiber, HookContextCosumer, HookEffect, HookMemo, HookValue, HookValueOut, RenderWithDep, VirtaulDomNode, VirtualDomOperator } from "./Fiber"
+import { arrayEqual, arrayNotEqualDepsWithEmpty, quote, SetValue, GetValue, simpleEqual } from "wy-helper"
+import { Fiber, HookContextCosumer, HookEffect, HookComputed, HookValue, RenderWithDep, VirtaulDomNode, VirtualDomOperator, HookMemo } from "./Fiber"
 import { EnvModel } from "./commitWork"
-
-
-
-
-const wipFiber: [EnvModel, Fiber] = [] as any
+const w = window as any
+w.mvr = w.mvr || {}
+const mvr = w.mvr as {
+  isMemo: boolean
+  wipFiber: [EnvModel, Fiber],
+  allowWipFiber: boolean
+}
+mvr.wipFiber = mvr.wipFiber || []
 export function useParentFiber() {
-  if (allowWipFiber) {
-    return wipFiber
+  if (mvr.allowWipFiber) {
+    return mvr.wipFiber
   }
   console.error('禁止在此处访问fiber')
   throw new Error('禁止在此处访问fiber')
 }
 
-let allowWipFiber = false
-export function draftParentFiber() {
-  allowWipFiber = false
+export function draftParentFiber(withMemo?: boolean) {
+  mvr.allowWipFiber = false
+  if (withMemo) {
+    mvr.isMemo = true
+  }
 }
-export function revertParentFiber() {
-  allowWipFiber = true
+export function revertParentFiber(withMemo?: boolean) {
+  mvr.allowWipFiber = true
+  if (withMemo) {
+    mvr.isMemo = true
+  }
 }
 
 
@@ -44,8 +52,8 @@ export function revertParentFiber() {
  * @returns 
  */
 function isOnRender(envModel: EnvModel) {
-  if (allowWipFiber) {
-    return wipFiber[0] == envModel
+  if (mvr.allowWipFiber) {
+    return mvr.wipFiber[0] == envModel
   }
   return false
 }
@@ -54,7 +62,7 @@ function notRenderRequestFlushSync(envModel: EnvModel) {
   /**
    * 不在render期间,则触发回流
    */
-  if (!isOnRender(envModel)) {
+  if (isOnRender(envModel) || mvr.isMemo) {
     return false
   }
   envModel.requestFlushSync()
@@ -64,42 +72,47 @@ function notRenderRequestFlushSync(envModel: EnvModel) {
 const hookIndex = {
   state: 0,
   effects: new Map<number, number>(),
+  computed: 0,
   memo: 0,
   beforeFiber: undefined as (Fiber | undefined),
   cusomer: 0
 }
 export function updateFunctionComponent(envModel: EnvModel, fiber: Fiber) {
   revertParentFiber()
-  wipFiber[0] = envModel
-  wipFiber[1] = fiber
+  mvr.wipFiber[0] = envModel
+  mvr.wipFiber[1] = fiber
 
   hookIndex.state = 0
   hookIndex.effects.clear()
+  hookIndex.computed = 0
   hookIndex.memo = 0
 
   hookIndex.beforeFiber = undefined
 
   hookIndex.cusomer = 0
   fiber.render()
-  draftParentFiber()
+  draftParentFiber();
+  (mvr.wipFiber as any[]).length = 0
 }
 
-export function useModel<M, T>(initValue: M, initFun: (v: M) => T): HookValueOut<T>
-export function useModel<T>(initValue: T, initFun?: (v: T) => T): HookValueOut<T>
+
+type CreateG<T, G> = (get: GetValue<T>, set: SetValue<T>) => G
+export function useBaseModel<M, G, T>(initValue: M, createG: CreateG<T, G>, initFun: (v: M) => T): G
+export function useBaseModel<T, G>(initValue: T, createG: CreateG<T, G>, initFun?: (v: T) => T): G
 /**
  * 一般可简单封装为[value,set,get]用于render
  * @param initValue 
  * @returns 
  */
-export function useModel(initValue: any, initFun = quote) {
+export function useBaseModel(initValue: any, createG: CreateG<any, any>, initFun = quote) {
   const [envModel, parentFiber] = useParentFiber()
   const isInit = parentFiber.effectTag == "PLACEMENT"
   if (isInit) {
     const hookValues = parentFiber.hookValue || []
     parentFiber.hookValue = hookValues
-    const hook: HookValue<any> = {
+    const hook: HookValue<any, any> = {
       value: initFun(initValue),
-      out: [function () {
+      out: createG(function () {
         return hook.value
       }, function (v) {
         if (v != hook.value) {
@@ -108,7 +121,7 @@ export function useModel(initValue: any, initFun = quote) {
           parentFiber.effectTag = "UPDATE"
           hook.value = v
         }
-      }]
+      })
     }
     hookValues.push(hook)
     return hook.out
@@ -122,7 +135,6 @@ export function useModel(initValue: any, initFun = quote) {
     return hook.out
   }
 }
-
 
 export type EffectResult<T> = (void | ((deps: T) => void))
 /**
@@ -185,45 +197,25 @@ export function useLevelEffect(
     }
   }
 }
-export function useComputed<T, V extends readonly any[] = readonly any[]>(
-  effect: () => T
-): () => T
-/**
- * 一般可简单进一步封装[value,get]用于render
- * @param effect 
- * @param deps 
- * @returns 
- */
-export function useComputed<T, V extends readonly any[] = readonly any[]>(
-  effect: (deps: V) => T,
-  getDeps: () => V
-): () => T
-export function useComputed<T>(
-  effect: (deps?: any) => T,
-  getDeps?: () => any
-): () => T {
+
+export function useBaseMemo<T, V extends readonly any[] = readonly any[]>(
+  effect: (deps: V, isInit: boolean) => T,
+  deps: V,
+): T {
   const [envModel, parentFiber] = useParentFiber()
   const isInit = parentFiber.effectTag == "PLACEMENT"
   if (isInit) {
     const hookMemos = parentFiber.hookMemo || []
     parentFiber.hookMemo = hookMemos
-    const item: HookMemo<T, any> = {
-      effect,
-      getDeps,
-      getValue() {
-        notRenderRequestFlushSync(envModel)
-        const deps = getDeps?.()
-        if (!deps || (deps && (!item.cachaValue || !arrayEqual(deps, item.cacheDeps as any, simpleEqual)))) {
-          draftParentFiber()
-          item.cachaValue = item.effect(deps!)
-          revertParentFiber()
-          item.cacheDeps = deps
-        }
-        return item.cachaValue!
-      }
+
+    draftParentFiber(true)
+    const state: HookMemo<T, V> = {
+      value: effect(deps, isInit),
+      deps,
     }
-    hookMemos.push(item)
-    return item.getValue
+    revertParentFiber(true)
+    hookMemos.push(state)
+    return state.value
   } else {
     const hookMemos = parentFiber.hookMemo
     if (!hookMemos) {
@@ -235,12 +227,53 @@ export function useComputed<T>(
       throw new Error("出现了更多的memo")
     }
     hookIndex.memo = index + 1
-    hook.getDeps = getDeps
-    hook.effect = effect
-    return hook.getValue
+    if (arrayEqual(hook.deps, deps, simpleEqual)) {
+      //不处理
+      return hook.value
+    } else {
+      draftParentFiber(true)
+      hook.value = effect(deps, isInit)
+      hook.deps = deps
+      revertParentFiber(true)
+      return hook.value
+    }
   }
 }
 
+export function useBaseComputed<T, G>(
+  value: T,
+  getG: (value: GetValue<T>) => G
+): G {
+  const [envModel, parentFiber] = useParentFiber()
+  const isInit = parentFiber.effectTag == "PLACEMENT"
+  if (isInit) {
+    const hookMemos = parentFiber.hookComputed || []
+    parentFiber.hookComputed = hookMemos
+    const item: HookComputed<T, G> = {
+      value,
+      getValue: getG(function () {
+        notRenderRequestFlushSync(envModel)
+        //同步后,获得实时值
+        return item.value!
+      })
+    }
+    hookMemos.push(item)
+    return item.getValue
+  } else {
+    const hookMemos = parentFiber.hookComputed
+    if (!hookMemos) {
+      throw new Error("原组件上不存在memos")
+    }
+    const index = hookIndex.computed
+    const hook = hookMemos[index]
+    if (!hook) {
+      throw new Error("出现了更多的memo")
+    }
+    hookIndex.computed = index + 1
+    hook.value = value
+    return hook.getValue
+  }
+}
 
 export function renderFiber<T extends readonly any[] = readonly any[]>(
   dom: VirtualDomOperator,

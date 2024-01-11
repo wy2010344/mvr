@@ -54,5 +54,9 @@
   "peerDependencies": {
     "wy-helper": "^0.1.0",
     "mvr-core": "^0.1.0"
+  },
+  "dependencies": {
+    "mvr-core": "file:.yalc/mvr-core",
+    "wy-helper": "file:.yalc/wy-helper"
   }
 }

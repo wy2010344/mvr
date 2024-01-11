@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "mvr-core": {
-      "signature": "20b3b2ed1a9d47e1b918e1737d9b2303",
+      "signature": "ab9137d3c09217aa9ba3a67d9bc23ff1",
       "file": true
     },
     "wy-helper": {

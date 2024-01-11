@@ -2,11 +2,11 @@
   "version": "v1",
   "packages": {
     "wy-helper": {
-      "signature": "b2f5bab173688986310facd3ad4d7477",
+      "signature": "d548c06ad17e0400da049e9a9931139e",
       "file": true
     },
     "mvr-core": {
-      "signature": "6811df8d4a827c1fbfb7cbe8cffab0e9",
+      "signature": "ab9137d3c09217aa9ba3a67d9bc23ff1",
       "file": true
     }
   }

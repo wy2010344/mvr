@@ -1,7 +1,6 @@
 import { emptyArray, getTheEmptyArray } from "wy-helper"
-import { useAttrEffect, useEffect } from "mvr-helper"
+import { useAttrEffect, useEffect, useRefConst } from "mvr-helper"
 import { CSSParamType, CssNest, createBodyStyleTag, genCSS, genCssMap } from "wy-dom-helper"
-import { useComputed } from "mvr-core"
 
 /**
  * 单个css,动态变化
@@ -21,7 +20,7 @@ function useDeleteStyle(style: HTMLStyleElement) {
   }, emptyArray)
 }
 export function useCssMap<T extends CssNest>(map: T, split?: string) {
-  const style = useComputed(createBodyStyleTag, getTheEmptyArray)()
+  const style = useRefConst(createBodyStyleTag)
   const { css, classMap } = genCssMap(map, style.id, split)
   useAttrEffect(() => {
     style.textContent = css

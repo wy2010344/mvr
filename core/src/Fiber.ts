@@ -36,17 +36,18 @@ export type RenderWithDep<T extends readonly any[] = readonly any[]> = [
 
 type EffectTag = "PLACEMENT" | "UPDATE"
 
-export type HookMemo<T, V extends readonly any[] = readonly any[]> = {
-  effect(deps: V): T,
-  getDeps?(): V
-  getValue(): T
-  cacheDeps?: V
-  cachaValue?: T
+export type HookComputed<T, G> = {
+  getValue: G
+  value?: T
 }
-export type HookValueOut<T> = [() => T, (v: T) => void]
-export type HookValue<T> = {
+// export type HookValueOut<T> = [() => T, (v: T) => void]
+export type HookValue<T, G> = {
   value: T
-  out: HookValueOut<T>
+  out: G
+}
+export type HookMemo<T, V extends readonly any[]> = {
+  value: T,
+  deps: V
 }
 export type HookEffect = {
   deps?: readonly any[]
@@ -59,8 +60,9 @@ type RenderDeps = {
 export class Fiber {
   destroyed = false
   effectTag?: EffectTag = 'PLACEMENT'
+  hookComputed?: HookComputed<any, any>[]
   hookMemo?: HookMemo<any, any>[]
-  hookValue?: HookValue<any>[]
+  hookValue?: HookValue<any, any>[]
   hookEffects?: Map<number, HookEffect[]>
 
   contextProvider?: Map<any, {

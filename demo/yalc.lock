@@ -2,7 +2,7 @@
   "version": "v1",
   "packages": {
     "mvr-core": {
-      "signature": "68bd2b33c423c7719a605bbff6f56010",
+      "signature": "5410aa31afc5d071214061f5a949d215",
       "file": true
     },
     "mvr-dom": {
@@ -10,19 +10,23 @@
       "file": true
     },
     "mvr-helper": {
-      "signature": "9c71042c2bba3408d989942d38470317",
+      "signature": "8ff0db9bad47df33f3da0649f9c3cf7c",
       "file": true
     },
     "wy-helper": {
-      "signature": "e95fc587e02eb805c605ccc9b4935190",
+      "signature": "88dbc5e0b57120a6559c21a73132f940",
       "file": true
     },
     "mvr-dom-helper": {
-      "signature": "4fd3f6657861ff243c905b53a07d08e8",
+      "signature": "cc75d2dcaa50b85bad2ef8e0667fb7f9",
       "file": true
     },
     "wy-dom-helper": {
       "signature": "c8c2918196e652eb354ffa61f7782ac4",
+      "file": true
+    },
+    "my-lib": {
+      "signature": "d63c8e54dc821bd8663eeaf503d87e3c",
       "file": true
     }
   }

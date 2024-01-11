@@ -1,5 +1,5 @@
-import { getTheEmptyArray, storeRef } from "wy-helper";
-import { draftParentFiber, renderFiber, revertParentFiber, useComputed, useParentFiber } from "./fc";
+import { emptyArray, getTheEmptyArray, quote, storeRef } from "wy-helper";
+import { draftParentFiber, renderFiber, revertParentFiber, useBaseComputed, useBaseMemo, useParentFiber } from "./fc";
 import { Fiber, VirtaulDomNode, VirtualDomOperator } from "./Fiber";
 ////////****useMap****////////////////////////////////////////////////////////////////////////////////////////////////////////////
 export type MapRowRender<C, T extends any[]> = readonly [
@@ -53,7 +53,7 @@ export function renderMapF<M, C>(
   deps?: readonly any[]
 ) {
   return renderFiber(dom, function () {
-    const mapRef = useComputed(createMapRef, getTheEmptyArray)()
+    const mapRef = useBaseMemo(createMapRef, emptyArray)
     const oldMap = cloneMap(mapRef.get())
     const newMap = new Map<any, Fiber[]>()
 

@@ -17,6 +17,7 @@
     "mvr-dom": "file:.yalc/mvr-dom",
     "mvr-dom-helper": "file:.yalc/mvr-dom-helper",
     "mvr-helper": "file:.yalc/mvr-helper",
+    "my-lib": "file:.yalc/my-lib",
     "wy-dom-helper": "file:.yalc/wy-dom-helper",
     "wy-helper": "file:.yalc/wy-helper"
   }

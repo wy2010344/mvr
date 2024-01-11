@@ -1,5 +1,5 @@
-import { getTheEmptyArray } from "wy-helper";
-import { draftParentFiber, renderFiber, revertParentFiber, useComputed, useParentFiber } from "./fc";
+import { emptyArray, getTheEmptyArray, quote } from "wy-helper";
+import { draftParentFiber, renderFiber, revertParentFiber, useBaseComputed, useBaseMemo, useParentFiber } from "./fc";
 import { Fiber, VirtaulDomNode, VirtualDomOperator } from "./Fiber";
 ////////****single****////////////////////////////////////////////////////////////////////////////////////////////////////////////
 type OneProps<T extends readonly any[] = readonly any[]> = readonly [
@@ -42,7 +42,7 @@ export function renderOneF<M>(
 
     let commitWork: (() => void) | void = undefined
     const [envModel, parentFiber] = useParentFiber()
-    const cache = useComputed(initCache, getTheEmptyArray)()
+    const cache = useBaseMemo(initCache, emptyArray)
     if (cache.key == key && cache.fiber) {
       //key相同复用
       cache.fiber.changeRender(render as any, deps)

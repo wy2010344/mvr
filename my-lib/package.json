@@ -1,0 +1,40 @@
+{
+  "name": "my-lib",
+  "version": "0.0.0",
+  "files": [
+    "dist",
+    "abc.d.ts",
+    "bcd.d.ts"
+  ],
+  "main": "./dist/main.js",
+  "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.js",
+      "require": "./dist/main.js"
+    },
+    "./abc": {
+      "types": "./dist/abc.d.ts",
+      "import": "./dist/abc.js",
+      "require": "./dist/abc.js"
+    },
+    "./bcd": {
+      "types": "./dist/bcd.d.ts",
+      "import": "./dist/bcd.js",
+      "require": "./dist/bcd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "prepare": "tsc && vite build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-plugin-dts": "^3.7.0"
+  }
+}
