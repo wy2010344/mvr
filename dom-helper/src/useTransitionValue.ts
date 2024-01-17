@@ -1,6 +1,6 @@
 import { EmptyFun } from "wy-helper"
-import { useEffect, useModelState } from 'mvr-helper'
-import { forceFlow, forceFlowClassNames, forceFlowInitClassNames, requestBatchAnimationFrame } from "wy-dom-helper"
+import { useEffect, useModelState, useModelValue } from 'mvr-helper'
+import { CSSProperties, forceFlow, forceFlowClassNames, forceFlowInitClassNames, forceFlowInitStyle, forceFlowStyle, mergeStyle, requestBatchAnimationFrame } from "wy-dom-helper"
 
 
 type Getter<T> = (...vs: any[]) => T
@@ -26,62 +26,117 @@ export function useInitClassNames(
   initCls: string,
   showCls: string,
 ) {
-  const value = {
-    init: initCls,
-    show: showCls
-  }
-  return useTriggerClassNames(ref, false, value, value)
+  return useTriggerClassNames(ref, false, {
+    willShow: initCls,
+    show: showCls,
+    exit: initCls
+  })
 }
+
 export function useTriggerClassNames(
   ref: () => Element,
   exiting: any,
-  enter: {
-    init: string
+  config: {
+    willShow: string
     show: string
-  },
-  exit: string | {
-    init: string
-    show: string
+    willExit?: string
+    exit: string
   },
   effect?: () => void | EmptyFun
 ) {
   useEffect(() => {
     const div = ref()
     if (exiting) {
-      if (typeof exit == 'string') {
-        forceFlowClassNames(div, exit)
+      if (config.willExit) {
+        forceFlowInitClassNames(div, config.willExit, config.exit)
       } else {
-        forceFlowInitClassNames(div, exit.init, exit.show)
+        forceFlowClassNames(div, config.exit)
       }
     } else {
-      forceFlowInitClassNames(div, enter.init, enter.show)
+      forceFlowInitClassNames(div, config.willShow, config.show)
     }
     return effect?.()
   }, [!exiting])
-  return exiting ? typeof exit == 'string' ? exit : exit.show : enter.show
+  return exiting ? config.exit : config.show
 }
 
 export function useTriggerClassNamesWithShow(
   ref: () => Element,
   exiting: any,
-  enter: {
-    init: string
+  config: {
+    willShow: string
     show: string
-  },
-  exit: string | {
-    init: string
-    show: string
+    willExit?: string
+    exit: string
   },
   resolve: EmptyFun,
   timeout: number,
   show?: string
 ) {
-  const [state, setState] = useModelState<string | undefined>(undefined)
-  const cls = useTriggerClassNames(ref, exiting, enter, exit, function () {
+  const state = useModelValue<string>()
+  const cls = useTriggerClassNames(ref, exiting, config, function () {
     return subscribeTimeout(show ? function () {
       resolve()
-      setState(show)
+      state.value = show
     } : resolve, timeout)
+  })
+  if (exiting) {
+    return cls
+  } else {
+    return state || cls
+  }
+}
+export type TriggerStyleConfig = {
+  willShow: CSSProperties
+  show: CSSProperties
+  showReplace?(div: ElementCSSInlineStyle & Element, style: CSSProperties): CSSProperties
+  willExit?: CSSProperties
+  willExitReplace?(div: ElementCSSInlineStyle & Element, style: CSSProperties): CSSProperties
+  exit: CSSProperties
+}
+export function useTriggerStyle(
+  ref: () => ElementCSSInlineStyle & Element,
+  exiting: any,
+  config: TriggerStyleConfig,
+  effect?: (exiting: any) => void
+) {
+  useEffect(() => {
+    const div = ref()
+    if (exiting) {
+      const replace = config.willExitReplace || config.showReplace
+      if (config.willExit || replace) {
+        forceFlowInitStyle(div, config.willExit || config.show, config.exit, replace)
+      } else {
+        forceFlowStyle(div, config.exit)
+      }
+    } else {
+      const replaceShow = config.showReplace?.(div, config.show) || config.show
+      forceFlowInitStyle(div, config.willShow, replaceShow)
+    }
+    return effect?.(exiting)
+  }, [!exiting])
+  return exiting ? config.exit : config.show
+}
+
+export function useTriggerStyleWithShow(
+  ref: () => ElementCSSInlineStyle & Element,
+  exiting: any,
+  config: TriggerStyleConfig,
+  resolve: EmptyFun,
+  timeout: number,
+  show?: CSSProperties
+) {
+  const state = useModelValue<CSSProperties>()
+  const cls = useTriggerStyle(ref, exiting, config, function (exiting) {
+    return subscribeTimeout(function () {
+      resolve()
+      if (!exiting && config.showReplace) {
+        mergeStyle(ref(), config.show)
+      }
+      if (show) {
+        state.value = show
+      }
+    }, timeout)
   })
   if (exiting) {
     return cls

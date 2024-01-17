@@ -1,9 +1,7 @@
 import { dom } from "mvr-dom";
-import { Attribute, Init, Method, Model, getAttributeKey, useStrFilter } from "../model";
-import { renderArray, renderIf, useBuildSubSetArray, useBuildSubSetObject, useModelValue } from "mvr-helper";
-import { renderInput, renderInputCheckbox } from "mvr-dom-helper";
-import { RValue, RWValue, emptyArray, emptyObject } from "wy-helper";
-import { cns, cssMap } from "wy-dom-helper";
+import { Attribute, Init, Method, Model } from "../model";
+import { useBuildSubSetObject } from "mvr-helper";
+import { RWValue, emptyArray, emptyObject } from "wy-helper";
 import { render参数面板 } from "./参数面板";
 import { render方法面板 } from "./方法面板";
 import { render构造方法 } from "./构造方法面板";

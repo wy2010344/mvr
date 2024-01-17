@@ -24,5 +24,5 @@ export function useMutationState<Req extends any[], Res>(effect: (...vs: Req) =>
     }).catch(err => {
       data.value = ({ type: "error", value: err, version })
     })
-  }), data.readonly, versionLock.readonly] as const
+  }), data.value, versionLock.value] as const
 }

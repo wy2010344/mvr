@@ -3,7 +3,7 @@ import { renderInput } from "mvr-dom-helper";
 import { renderArray, renderIf, useBuildSubSetArray, useBuildSubSetObject, useMemo, useModel, useModelValue } from "mvr-helper";
 import { RWValue, emptyArray, quote, run } from "wy-helper";
 
-import { BaseQue, Que, andMatch, andRuleGet, manyMatch, manyRuleGet, match, matchBetween, matchEnd, matchVS, orMatch, orRuleGet, ruleGet, whiteSpaceRule } from 'wy-helper/tokenParser'
+import { BQue, BaseQue, Que, andMatch, andRuleGet, manyMatch, manyRuleGet, match, matchBetween, matchEnd, matchVS, orMatch, orRuleGet, ruleGet, whiteSpaceRule } from 'wy-helper/tokenParser'
 import { Method } from "../model";
 import { cns, cssMap } from "wy-dom-helper";
 export function render方法面板({
@@ -301,14 +301,15 @@ type Sentence = {
   }
 }
 
+type HQue = BaseQue<SToken, SToken[]>
 
-const matchPure = matchVS<SToken, SToken[]>(v => {
+const matchPure = matchVS<SToken, HQue>(v => {
   return v.type == 'pure'
 })
-const matchBind = matchVS<SToken, SToken[]>(v => {
+const matchBind = matchVS<SToken, HQue>(v => {
   return v.type == 'bind'
 })
-const matchAt = matchVS<SToken, SToken[]>(v => {
+const matchAt = matchVS<SToken, HQue>(v => {
   return v.type == 'at' && (v.value == '@map' || v.value == '@list')
 })
 
@@ -372,7 +373,7 @@ const sentenceRulePlus = andRuleGet(
 
 
 function parse(tokens: SToken[]) {
-  const result = sentenceRulePlus(new BaseQue(tokens.filter(v => v.type != 'white')))
+  const result = sentenceRulePlus(new BQue(tokens.filter(v => v.type != 'white')))
   if (result) {
     return result.value
   }

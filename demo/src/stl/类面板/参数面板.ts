@@ -1,9 +1,10 @@
 import { dom } from "mvr-dom";
-import { Attribute, Model, getAttributeKey, useStrFilter } from "../model";
+import { Attribute, Model, getAttributeKey } from "../model";
 import { renderArray, renderIf, useBuildSubSetArray, useBuildSubSetObject, useModelValue } from "mvr-helper";
 import { renderInput, renderInputCheckbox } from "mvr-dom-helper";
 import { RValue, RWValue, emptyArray } from "wy-helper";
 import { cns, cssMap } from "wy-dom-helper";
+import { useStrFilter } from "../../util";
 
 export function render参数面板({
   attributes

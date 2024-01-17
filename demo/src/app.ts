@@ -6,13 +6,15 @@ import { useOnLine } from "mvr-dom-helper";
 import { page1 } from "./page1";
 import { normalPanel, renderPanelProvider } from "./panel/PanelContext";
 import stl from "./stl";
+import { 类列表面板 } from "./stl2";
 
 export function createmvr(app: HTMLElement) {
   const destroy = createRoot(app, function () {
     const operator = renderPanelProvider()
     useEffect(() => {
       // demoPanel(operator)
-      stl(operator, null)
+      // stl(operator, null)
+      类列表面板(operator, null)
     }, emptyArray)
   }, getScheduleAskTime({}))
 }

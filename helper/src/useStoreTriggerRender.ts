@@ -10,14 +10,14 @@ import { useModelValue } from './useModelState'
 export function useSyncExternalStore<T>(subscribe: (callback: EmptyFun) => EmptyFun, getSnapshot: () => T) {
   const state = useModelValue(getSnapshot())
   useEffect(() => {
-    if (state != getSnapshot()) {
+    if (state.value != getSnapshot()) {
       state.value = getSnapshot()
     }
     return subscribe(function () {
       state.value = getSnapshot()
     })
   }, [subscribe])
-  return state.readonly
+  return state.value
 }
 /**
  *

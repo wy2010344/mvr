@@ -1,7 +1,7 @@
 import { createContext } from "mvr-core"
 import renderPanel, { PanelParams, Size } from "./renderPanel"
 import { useRefConst, renderFragment, renderArray, useStoreTriggerRender } from 'mvr-helper'
-import { valueCenterOf } from "wy-helper"
+import { emptyArray, valueCenterOf } from "wy-helper"
 
 export type PanelCollection = {
   id: number
@@ -93,7 +93,7 @@ export function usePortalPanel(args: Omit<PanelParams, "portalTarget" | "moveFir
 
 export function renderPanelProvider() {
   const { panels, operate } = useRefConst(() => {
-    const panels = valueCenterOf<PanelCollection>([])
+    const panels = valueCenterOf<PanelCollection>(emptyArray as PanelCollection)
     const oldSet = panels.set
     panels.set = function (sv) {
       oldSet(sv)

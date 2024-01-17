@@ -30,16 +30,3 @@ export function getAttributeKey(atr: Attribute) {
   return atr.name
 }
 
-export function useStrFilter<T>(filter: string, list: T[], getKey: (v: T) => string) {
-  return useMemo(() => {
-    const inputLowerCase = filter.trim().toLocaleLowerCase()
-    const showModelList = list.filter(v => {
-      return getKey(v).toLocaleLowerCase().includes(inputLowerCase)
-    })
-    const matchItem = showModelList.find(v => getKey(v) == filter)
-    return {
-      showModelList,
-      matchItem
-    }
-  }, [filter, list])
-}

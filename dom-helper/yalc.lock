@@ -12,6 +12,10 @@
     "wy-helper": {
       "signature": "d548c06ad17e0400da049e9a9931139e",
       "file": true
+    },
+    "wy-dom-helper": {
+      "signature": "cbd4cc1bc6c31ece9e768ebc25373aac",
+      "file": true
     }
   }
 }

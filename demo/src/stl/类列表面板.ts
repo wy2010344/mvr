@@ -1,9 +1,10 @@
 import { renderArray, renderIf, useMemo, useModelValue } from "mvr-helper"
-import { Model, getModelKey, useStrFilter } from "./model"
+import { Model, getModelKey } from "./model"
 import { dom } from "mvr-dom"
 import { renderInput } from "mvr-dom-helper"
 import { cns, cssMap } from "wy-dom-helper"
 import { RWValue } from "wy-helper"
+import { useStrFilter } from "../util"
 
 
 export function render类列表面板({
