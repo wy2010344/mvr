@@ -12,10 +12,6 @@ export type Size = {
 
 export type PanelParams = {
   // portalTarget?(): Node
-  width?: RWValue<number>
-  height?: RWValue<number>
-  top?: RWValue<number>
-  left?: RWValue<number>
   title?(): void
   bodyStyle?: string
   children(p: Size, body: HTMLElement): void
@@ -36,7 +32,7 @@ export default function renderPanel({
   moveFirst,
   asPortal
   // portalTarget
-}: PanelParams) {
+}: PanelParams & Partial<Size>) {
   const dragResize = useRefConst(() => resizeHelper({
     addWidth(w) {
       width.value += w

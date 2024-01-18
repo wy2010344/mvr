@@ -18,24 +18,3 @@ export function useStrFilter<T>(
     }
   }, [filter, list])
 }
-
-
-export function useValueCenterValue<T>(
-  store: ValueCenter<T>
-): RWValue<T>
-export function useValueCenterValue<T, F>(
-  store: ValueCenter<T>,
-  filter: (v: T) => F,
-  build: (v: F, old: T) => T
-): RWValue<F>
-export function useValueCenterValue(store: ValueCenter<any>) {
-  const filter = arguments[1] || quote
-  const build = arguments[2] || quote
-  const modelList = useStoreTriggerRender(store, filter)
-  const getValue = useComputedValue(modelList)
-  return useMemo(() => {
-    return initRWValue(getValue.get, value => {
-      store.set(build(value, store.get()))
-    })
-  }, emptyArray)
-}

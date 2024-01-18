@@ -1,6 +1,7 @@
 import { useEffect } from "./useEffect";
-import { EmptyFun, ValueCenter, quote } from "wy-helper";
+import { EmptyFun, RWValue, ValueCenter, emptyArray, initRWValue, quote } from "wy-helper";
 import { useModelValue } from './useModelState'
+import { useMemo } from "./useRef";
 /**
  * 
  * @param subscribe 最好保证订阅函数的独立
@@ -31,4 +32,20 @@ export function useStoreTriggerRender<T>(store: ValueCenter<T>) {
   return useSyncExternalStore(store.subscribe, function () {
     return filter(store.get())
   })
+}
+
+
+export function useStoreValue<T, M>(store: ValueCenter<T>, filter: (a: T) => M, build: (a: M, old: T) => T): RWValue<M>;
+export function useStoreValue<T>(store: ValueCenter<T>, filter?: (a: T) => T, build?: (a: T, old: T) => T): RWValue<T>;
+export function useStoreValue<T>(store: ValueCenter<T>): RWValue<T> {
+  const filter = arguments[1] || quote
+  const build = arguments[2] || quote
+  useStoreTriggerRender(store, filter)
+  return useMemo(() => {
+    return initRWValue(function () {
+      return filter(store.get())
+    }, function (v) {
+      store.set(build(v, store.get()))
+    })
+  }, emptyArray)
 }

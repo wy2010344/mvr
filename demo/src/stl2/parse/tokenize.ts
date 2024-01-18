@@ -1,4 +1,5 @@
 import { Que, andMatch, manyMatch, manyRuleGet, match, matchBetween, matchEnd, matchToEnd, notMathChar, orMatch, orMatchEmpty, orRuleGet, ruleGet, ruleStrBetween, whiteSpaceRule } from "wy-helper/tokenParser";
+import { getEvalString } from "./stringUtil";
 
 /**
  * 如果冒号开头,从作为域中查找.
@@ -92,16 +93,28 @@ export class NumberToken extends SToken {
   getClassName(): string {
     return 'number'
   }
+  constructor(begin: Que, end: Que) {
+    super(begin, end)
+    this.number = Number(this.value)
+  }
+  readonly number: number
 }
 class UnParsedToken extends MToken {
   getClassName(): string {
     return ''
   }
 }
+
+
 export class StringToken extends SToken {
   getClassName(): string {
     return 'string'
   }
+  constructor(begin: Que, end: Que) {
+    super(begin, end)
+    this.string = getEvalString(this.value)
+  }
+  readonly string: string
 }
 class CommentToken extends SToken {
   getClassName(): string {
@@ -128,7 +141,7 @@ export interface TNode {
   readonly end: number
   readonly value: string
 }
-export const keywords = ['(', ')', '[', ']', ',', '|', '.']
+export const keywords = ['(', ')', '[', ']', ',', ';', '|', '.']
 function getCharCode(n: string) {
   return n.charCodeAt(0)
 }

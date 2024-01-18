@@ -1,7 +1,7 @@
-import { ErrorArea, MToken, } from "./tokenize"
+import { ErrorArea, MToken, } from "./parse/tokenize"
 import { emptyArray, removeWhere } from "wy-helper"
 import { cns } from "wy-dom-helper"
-import { useErrorContextProvide } from "../model"
+import { useErrorContextProvide } from "./model"
 import { renderFragment, renderIf, useEffect, useModelValue } from "mvr-helper"
 import { dom, renderContent } from "mvr-dom"
 

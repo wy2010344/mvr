@@ -1,12 +1,10 @@
 import { RWValue, emptyArray, quote } from "wy-helper";
 import { createContext } from "mvr-core";
 import { createRoot, dom, getScheduleAskTime } from "mvr-dom";
-import { useModelState, renderArray, useEffect, useModel, useComputed, useComputedValue, useModelValue } from "mvr-helper";
+import { useModelState, renderArray, useEffect, useComputedValue, useModelValue } from "mvr-helper";
 import { useOnLine } from "mvr-dom-helper";
-import { page1 } from "./page1";
-import { normalPanel, renderPanelProvider } from "./panel/PanelContext";
-import stl from "./stl";
-import { 类列表面板 } from "./stl2";
+import { panelWith, renderPanelProvider } from "./panel/PanelContext";
+import stl2 from "./stl2";
 
 export function createmvr(app: HTMLElement) {
   const destroy = createRoot(app, function () {
@@ -14,36 +12,40 @@ export function createmvr(app: HTMLElement) {
     useEffect(() => {
       // demoPanel(operator)
       // stl(operator, null)
-      类列表面板(operator, null)
+      stl2(operator)
     }, emptyArray)
   }, getScheduleAskTime({}))
 }
 
 
-const demoPanel = normalPanel(function (operator) {
-  console.log("render")
-  dom.div().render(function () {
-    const value = useModelValue(0)
-    console.log("render", performance.now())
-    context.useProvider({
-      value,
-      addValue() {
-        value.value++
-      },
-    })
+const demoPanel = panelWith(function (operator) {
+  return {
+    children(size, div) {
+      console.log("render")
+      dom.div().render(function () {
+        const value = useModelValue(0)
+        console.log("render", performance.now())
+        context.useProvider({
+          value,
+          addValue() {
+            value.value++
+          },
+        })
 
-    const online = useOnLine()
+        const online = useOnLine()
 
-    dom.button({
-      onClick() {
-        value.value++
-      }
-    }).text`点击${value.value} ${online + ''}`
+        dom.button({
+          onClick() {
+            value.value++
+          }
+        }).text`点击${value.value} ${online + ''}`
 
-    renderSub()
-    renderToDoList()
-  }, emptyArray)
-  // page1()
+        renderSub()
+        renderToDoList()
+      }, emptyArray)
+      // page1()
+    },
+  }
 })
 function renderToDoList() {
   const [lists, setList, getList] = useModelState<number[]>(emptyArray as any)

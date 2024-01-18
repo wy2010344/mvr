@@ -58,6 +58,11 @@ function isOnRender(envModel: EnvModel) {
   return false
 }
 
+/**
+ * 如果一个过程中获得多处值,会触发多次更新,单独的flushSync能解决,这里却始终是独立的...
+ * @param envModel 
+ * @returns 
+ */
 function notRenderRequestFlushSync(envModel: EnvModel) {
   /**
    * 不在render期间,则触发回流

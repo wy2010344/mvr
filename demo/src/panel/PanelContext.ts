@@ -1,6 +1,6 @@
 import { createContext } from "mvr-core"
 import renderPanel, { PanelParams, Size } from "./renderPanel"
-import { useRefConst, renderFragment, renderArray, useStoreTriggerRender } from 'mvr-helper'
+import { useRefConst, renderFragment, renderArray, useStoreTriggerRender, useModelValue } from 'mvr-helper'
 import { emptyArray, valueCenterOf } from "wy-helper"
 
 export type PanelCollection = {
@@ -34,24 +34,18 @@ export type PanelCallback<T> = (
   operate: PanelOperate,
   value: T
 ) => void
-export function panelWith<T>({
-  children,
-  useArgs
-}: {
-  useArgs?(): Omit<PanelParams, "close" | "children" | "moveFirst">
-  children: (operate: PanelOperate, id: number, arg: T, size: Size, div: HTMLElement) => void,
-}): PanelCallback<T> {
-
+export function panelWith<T>(render: (
+  operate: PanelOperate,
+  id: number,
+  value: T
+) => Omit<PanelParams, "close" | "moveFirst">): PanelCallback<T> {
   return function (operate, value) {
     const id = operate.push(function () {
-      const args = useArgs?.()
+      const args = render(operate, id, value)
       renderPanel({
         ...args,
         close() {
           operate.close(id)
-        },
-        children(size, div) {
-          children(operate, id, value, size, div)
         },
         moveFirst() {
           operate.moveToFirst(id)
@@ -60,17 +54,6 @@ export function panelWith<T>({
     })
   }
 }
-export function normalPanel(
-  children: (operate: PanelOperate, id: number) => void,
-) {
-  const callback = panelWith({
-    children
-  })
-  return function (operate: PanelOperate) {
-    callback(operate, null)
-  }
-}
-
 
 export const CountContext = createContext(0)
 
